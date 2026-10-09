@@ -29,25 +29,37 @@ Fast's batched glyph painter and glyph atlas; layout retention and scene
 composition remain upstream. Arabic glyphs currently use Swash grayscale
 rasterization. The default non-Fast backend is unchanged.
 
+Lines that already fit reuse their native layout instead of shaping a second
+copy for wrapping. Dead layout owners are reclaimed with a bounded sweep,
+avoiding periodic scans of every live layout. Font descriptors are converted
+once, on their first Arabic use. For lines with at least 64 glyphs, a batched
+grapheme geometry lookup replaces repeated glyph hit tests where the source
+range is unambiguous; controls, overlapping geometry and other ambiguous cases
+retain native caret lookup. Caret and selection interaction always uses the
+retained native engine.
+
 The font conversion preserves Parley's canonical high-bit namespace. Clearing
 that bit produces correct geometry but no glyph bitmaps, the cause of the
 initial invisible-text regression. Native verification must include visible
 rendering, not just successful shaping.
 
-The first optimized macOS text-layout measurement used 1,000 distinct order
-labels, seven samples, and 100 cache passes per sample:
+An October 9, 2026 comparison on Apple M1 Pro used bundled Noto Sans Arabic,
+1,000 distinct order labels, seven fresh text systems per process, and three
+alternating process pairs. The first line is timed separately; values below
+are median uncached averages for the remaining 999 lines. Repeating the same
+order label stresses longer mixed Arabic, Latin, number and diacritic text.
 
-| Case | Fast baseline | Arabic port |
+| Arabic label length | Original adapter at `4e003a4` | Optimized adapter |
 | --- | ---: | ---: |
-| ASCII uncached, median | 19.63 µs/line | 19.19 µs/line |
-| ASCII cached, median | 77 ns/line | 80 ns/line |
-| Arabic uncached, median | — | 59.81 µs/line |
-| Arabic cached, median | — | 83 ns/line |
+| One order label | 45.74 µs/line | 46.24 µs/line |
+| Four copies | 159.50 µs/line | 159.85 µs/line |
+| Sixteen copies | 704.19 µs/line | 583.36 µs/line |
 
-These are text-layout microbenchmarks, not frame-rate results or a guarantee
-of zero overhead. The few-nanosecond cached difference is within the run's
-variation. Arabic uncached samples include lazy font catalog initialization
-amortized over 1,000 lines. Repeat on target hardware before performance claims.
+The long-line case is 17.2% faster; short-line shaping is effectively unchanged.
+English uncached medians differ by less than 1% across these text lengths.
+These are text microbenchmarks, not frame-rate results or a guarantee of zero
+overhead. The small-line cutoff avoids batching overhead on ordinary labels.
+Repeat on target hardware before application performance claims.
 
 ## Reproduce
 
@@ -56,6 +68,8 @@ and its QuickJS Git dependencies:
 
 ```sh
 ./script/run-arabic-fast-macos --self-test
+cargo test --release --manifest-path examples/arabic-performance/Cargo.toml \
+  --features arabic --test arabic-regressions
 cargo build --release --manifest-path examples/arabic-performance/Cargo.toml
 # Save that baseline executable before the feature build replaces it.
 cargo build --release --manifest-path examples/arabic-performance/Cargo.toml --features arabic
@@ -68,6 +82,13 @@ visual verification confirms Arabic labels, Input text, mixed English/numbers
 and diacritics are rendered. Native automation could read these values, but
 its accessibility click did not focus the field; no manual keyboard test is
 claimed.
+
+The public-consumer regression harness runs on the macOS process main thread.
+It checks glyph IDs, positions and UTF-8 source indices against the original
+native caret model for 216 combinations of text, font, size and length. It also
+checks exact caret positions after wrapping, live layout retention through
+3,000 unique cache insertions, and eventual release of dead geometry. It does
+not require the omitted upstream runtime unit-test fixtures.
 
 The native example, isolated Kit Fast consumer and default GPUI consumer compile. Full workspace
 validation and regeneration of the upstream workspace lockfile are pending:

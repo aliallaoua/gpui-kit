@@ -3,6 +3,11 @@ name = "arabic-performance"
 version = "0.1.0"
 edition = "2024"
 publish = false
+[[test]]
+name = "arabic-regressions"
+path = "src/regression_tests.rs"
+harness = false
+required-features = ["arabic"]
 [workspace]
 [features]
 arabic = ["gpui/arabic"]
@@ -16,3 +21,7 @@ opt-level = 3
 debug = 0
 [profile.release]
 strip = "none"
+
+[dev-dependencies]
+arabic-core = { package = "gpui-ce", git = "https://github.com/holool/gpui-arabic", rev = "18a98efc902cdb1d92fbb764f690818ffbee865e" }
+arabic-parley = { package = "gpui_ce_parley", git = "https://github.com/holool/gpui-arabic", rev = "18a98efc902cdb1d92fbb764f690818ffbee865e" }

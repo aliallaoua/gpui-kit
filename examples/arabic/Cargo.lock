@@ -2544,6 +2544,7 @@ dependencies = [
  "taffy 0.14.0",
  "thiserror 2.0.21",
  "ttf-parser",
+ "unicode-segmentation",
  "url",
  "usvg 0.46.0",
  "uuid",

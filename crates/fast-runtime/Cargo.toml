@@ -48,7 +48,7 @@ repository = "https://github.com/longbridge/gpui-fast"
 resolver = "2"
 
 [features]
-arabic = ["dep:arabic-core", "dep:arabic-parley"]
+arabic = ["dep:arabic-core", "dep:arabic-parley", "dep:unicode-segmentation"]
 bench = ["bench-support"]
 bench-support = [
     "profiler",
@@ -97,6 +97,10 @@ features = ["enumn"]
 
 [dependencies.anyhow]
 version = "1.0.86"
+
+[dependencies.unicode-segmentation]
+version = "1.12"
+optional = true
 
 [dependencies.async-task]
 version = "4.7"

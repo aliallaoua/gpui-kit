@@ -106,8 +106,10 @@ dependencies = [
 name = "arabic-performance"
 version = "0.1.0"
 dependencies = [
+ "gpui-ce",
  "gpui-fast",
  "gpui-fast-macos",
+ "gpui_ce_parley",
 ]
 
 [[package]]
@@ -1480,6 +1482,7 @@ dependencies = [
  "ctor",
  "derive_more",
  "derive_setters",
+ "embed-resource",
  "etagere",
  "foreign-types",
  "futures",
@@ -1533,6 +1536,7 @@ dependencies = [
  "web-time",
  "windows 0.61.3",
  "windows 0.62.2",
+ "zed-font-kit",
 ]
 
 [[package]]
@@ -1591,6 +1595,7 @@ dependencies = [
  "taffy 0.14.0",
  "thiserror 2.0.21",
  "ttf-parser",
+ "unicode-segmentation",
  "url",
  "usvg 0.46.0",
  "uuid",

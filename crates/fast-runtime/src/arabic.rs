@@ -11,12 +11,14 @@ use std::{
     collections::{HashMap, VecDeque},
     sync::{Arc, LazyLock, OnceLock, Weak},
 };
+use unicode_segmentation::UnicodeSegmentation as _;
 
 pub use ce::{
     CaretAffinity, CaretPosition, TextBoundary, TextDirection, TextMovement, VisualDirection,
 };
 const FONT_TAG: usize = 1 << (usize::BITS - 1);
-const LAYOUT_CAPACITY: usize = 1024;
+const CLEANUP_BUDGET: usize = 4;
+const PENDING_CAPACITY: usize = 128;
 
 /// Whether a line needs the bidi engine. The ASCII check is vectorized by Rust.
 pub fn needs_bidi(text: &str) -> bool {
@@ -62,6 +64,88 @@ fn descriptor(f: &Font) -> ce::Font {
             FontStyle::Oblique => ce::FontStyle::Oblique,
         },
     }
+}
+
+struct GlyphCluster {
+    left: ce::Pixels,
+    right: ce::Pixels,
+    following_left: ce::Pixels,
+    index: usize,
+}
+
+/// Resolve ordinary glyph positions with one backend cluster walk. The
+/// compatibility representation needs byte indices, but interaction continues
+/// to use the retained native layout and its caret affinity.
+fn glyph_clusters(text: &str, layout: &ce::LineLayout) -> Option<Vec<GlyphCluster>> {
+    if layout.visual_lines.len() != 1
+        || layout
+            .paint_fragments
+            .iter()
+            .map(|r| r.glyphs.len())
+            .sum::<usize>()
+            < 64
+    {
+        return None;
+    }
+    let ranges: Vec<_> = text
+        .grapheme_indices(true)
+        .map(|(start, grapheme)| start..start + grapheme.len())
+        .collect();
+    let geometry = layout.platform_layout.inline_geometry_for_ranges(&ranges);
+    let mut clusters = Vec::with_capacity(ranges.len());
+    for (range, rectangles) in ranges.into_iter().zip(geometry) {
+        // Zero-width controls and disjoint graphemes need native hit testing;
+        // avoid changing their boundary semantics to speed up ordinary labels.
+        if rectangles.len() != 1 {
+            return None;
+        }
+        let bounds = rectangles[0].bounds;
+        clusters.push(GlyphCluster {
+            left: bounds.left(),
+            right: bounds.right(),
+            following_left: ce::px(f32::MAX),
+            index: range.start,
+        });
+    }
+    clusters.sort_unstable_by(|a, b| f32::from(a.right).total_cmp(&f32::from(b.right)));
+    let mut following_left = ce::px(f32::MAX);
+    for cluster in clusters.iter_mut().rev() {
+        // End-order does not imply start-order: a later cluster may contain
+        // several earlier ones. Only use a byte index if no later box overlaps.
+        cluster.following_left = following_left;
+        if cluster.left < following_left {
+            following_left = cluster.left;
+        }
+    }
+    Some(clusters)
+}
+
+fn glyph_index(
+    layout: &ce::LineLayout,
+    clusters: Option<&[GlyphCluster]>,
+    glyph: &ce::ShapedGlyph,
+    height: ce::Pixels,
+) -> usize {
+    let x = glyph.position.x + ce::px(0.1);
+    if let Some(clusters) = clusters {
+        let i = clusters.partition_point(|cluster| cluster.right < x);
+        if let Some(cluster) = clusters.get(i)
+            && x >= cluster.left
+            && x < cluster.following_left
+        {
+            return cluster.index;
+        }
+    }
+    let caret = layout
+        .platform_layout
+        .caret_from_pixel_point(ce::point(x, height / 2.), height)
+        .unwrap_or_else(|c| c);
+    let range = if caret.affinity == ce::CaretAffinity::Upstream {
+        layout.platform_layout.logical_cluster_before(caret)
+    } else {
+        layout.platform_layout.logical_cluster_after(caret)
+    };
+    range.map_or(caret.index, |r| r.start)
 }
 
 /// A line shaped by the Arabic runtime, retaining source UTF-8 offsets.
@@ -137,7 +221,18 @@ impl ArabicLayout {
             .map(bounds)
             .collect()
     }
-    pub(crate) fn wrapped(&self, width: Option<Pixels>, max_lines: Option<usize>) -> Arc<Self> {
+    pub(crate) fn wrapped(
+        self: &Arc<Self>,
+        width: Option<Pixels>,
+        max_lines: Option<usize>,
+    ) -> Arc<Self> {
+        // A fitting line already has the required shaping and interaction
+        // geometry. Do not build a second Parley layout merely to measure it.
+        if width.is_none_or(|width| width >= fp(self.layout.width))
+            && max_lines.is_none_or(|limit| limit >= self.layout.visual_lines.len())
+        {
+            return self.clone();
+        }
         let key = (width, max_lines);
         if let Some(cached) = self.wraps.lock().get(&key) {
             return cached.clone();
@@ -178,13 +273,35 @@ struct CacheEntry {
 struct LayoutCache {
     entries: HashMap<u64, CacheEntry>,
     pending: VecDeque<Arc<ArabicLayout>>,
-    insertions: usize,
+    sweep: VecDeque<u64>,
+}
+impl LayoutCache {
+    fn collect_dead(&mut self) {
+        // Bound reclamation work per insertion instead of scanning every live
+        // layout in a periodic frame. Retained layouts are never evicted.
+        for _ in 0..self.sweep.len().min(CLEANUP_BUDGET) {
+            let key = self.sweep.pop_front().unwrap();
+            let entry = self.entries.get_mut(&key).unwrap();
+            if entry
+                .fast
+                .as_ref()
+                .is_some_and(|weak| weak.strong_count() == 0)
+            {
+                entry.owner = None;
+            }
+            if entry.arabic.strong_count() == 0 {
+                self.entries.remove(&key);
+            } else {
+                self.sweep.push_back(key);
+            }
+        }
+    }
 }
 static LAYOUTS: LazyLock<Mutex<LayoutCache>> = LazyLock::new(|| {
     Mutex::new(LayoutCache {
         entries: HashMap::new(),
         pending: VecDeque::new(),
-        insertions: 0,
+        sweep: VecDeque::new(),
     })
 });
 // The glyph buffer survives moving a LineLayout into Arc. Copies are registered
@@ -210,22 +327,8 @@ pub fn layout_for(layout: &LineLayout) -> Option<Arc<ArabicLayout>> {
 fn remember(layout: &LineLayout, arabic: Arc<ArabicLayout>) {
     let key = layout_key(layout);
     let mut cache = LAYOUTS.lock();
-    cache.insertions = cache.insertions.wrapping_add(1);
-    if cache.entries.len() >= LAYOUT_CAPACITY && cache.insertions % 64 == 0 {
-        // Release every dead frame owner before testing the weak geometry refs:
-        // several copied layouts can share one Arabic paragraph.
-        for entry in cache.entries.values_mut() {
-            if entry
-                .fast
-                .as_ref()
-                .is_some_and(|weak| weak.strong_count() == 0)
-            {
-                entry.owner = None;
-            }
-        }
-        cache
-            .entries
-            .retain(|_, entry| entry.arabic.strong_count() > 0);
+    if !cache.entries.contains_key(&key) {
+        cache.sweep.push_back(key);
     }
     cache.entries.insert(
         key,
@@ -238,9 +341,10 @@ fn remember(layout: &LineLayout, arabic: Arc<ArabicLayout>) {
     // Bridge the short interval between platform shaping and the Fast cache
     // taking ownership. RecentShapes and InputLine retain their own geometry.
     cache.pending.push_back(arabic);
-    while cache.pending.len() > 128 {
+    while cache.pending.len() > PENDING_CAPACITY {
         cache.pending.pop_front();
     }
+    cache.collect_dead();
 }
 pub(crate) fn copy_layout_metadata(source: &LineLayout, copy: &LineLayout) {
     if let Some(arabic) = layout_for(source) {
@@ -257,10 +361,20 @@ pub(crate) fn track_layout(layout: &Arc<LineLayout>) {
     }
 }
 
+struct ResolvedFont {
+    native: Font,
+    arabic: OnceLock<ce::Font>,
+}
+impl ResolvedFont {
+    fn arabic(&self) -> ce::Font {
+        self.arabic.get_or_init(|| descriptor(&self.native)).clone()
+    }
+}
+
 pub(crate) struct ArabicTextSystem {
     native: Arc<dyn PlatformTextSystem>,
     engine: OnceLock<Arc<arabic_parley::ParleyTextSystem>>,
-    fonts: Mutex<HashMap<FontId, Font>>,
+    fonts: Mutex<HashMap<FontId, ResolvedFont>>,
     registered: Mutex<Vec<Cow<'static, [u8]>>>,
     rasters: Mutex<HashMap<RenderGlyphParams, ce::RasterizedGlyph>>,
 }
@@ -334,7 +448,10 @@ impl PlatformTextSystem for ArabicTextSystem {
     }
     fn font_id(&self, font: &Font) -> anyhow::Result<FontId> {
         let id = self.native.font_id(font)?;
-        self.fonts.lock().entry(id).or_insert_with(|| font.clone());
+        self.fonts.lock().entry(id).or_insert_with(|| ResolvedFont {
+            native: font.clone(),
+            arabic: OnceLock::new(),
+        });
         Ok(id)
     }
     fn prewarm_fonts(&self, ids: &[FontId]) {
@@ -442,7 +559,7 @@ impl PlatformTextSystem for ArabicTextSystem {
                 offset += r.len;
                 ce::TextRun {
                     len: r.len,
-                    font: descriptor(fonts.get(&r.font_id).expect("resolved Fast font")),
+                    font: fonts.get(&r.font_id).expect("resolved Fast font").arabic(),
                     color: ce::black(),
                     background_color: None,
                     underline: None,
@@ -462,6 +579,7 @@ impl PlatformTextSystem for ArabicTextSystem {
             },
         });
         let height = cp(font_size);
+        let clusters = glyph_clusters(text, &native);
         let shaped_runs = native
             .paint_fragments
             .iter()
@@ -470,25 +588,11 @@ impl PlatformTextSystem for ArabicTextSystem {
                 glyphs: fragment
                     .glyphs
                     .iter()
-                    .map(|glyph| {
-                        let caret = native
-                            .platform_layout
-                            .caret_from_pixel_point(
-                                ce::point(glyph.position.x + ce::px(0.1), height / 2.),
-                                height,
-                            )
-                            .unwrap_or_else(|c| c);
-                        let range = if caret.affinity == ce::CaretAffinity::Upstream {
-                            native.platform_layout.logical_cluster_before(caret)
-                        } else {
-                            native.platform_layout.logical_cluster_after(caret)
-                        };
-                        ShapedGlyph {
-                            id: GlyphId(glyph.id.0),
-                            position: point(fp(glyph.position.x), fp(glyph.position.y)),
-                            index: range.map_or(caret.index, |r| r.start),
-                            is_emoji: glyph.is_emoji,
-                        }
+                    .map(|glyph| ShapedGlyph {
+                        id: GlyphId(glyph.id.0),
+                        position: point(fp(glyph.position.x), fp(glyph.position.y)),
+                        index: glyph_index(&native, clusters.as_deref(), glyph, height),
+                        is_emoji: glyph.is_emoji,
                     })
                     .collect(),
             })
