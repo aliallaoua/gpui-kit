@@ -2,9 +2,17 @@
 
 This fork uses the official GPUI Fast 0.1.6 runtime and platform crates. The
 runtime is retained under `crates/fast-runtime` with its license and provenance.
-The `arabic` feature adapts the pinned Parley engine from `holool/gpui-arabic`
-revision `18a98efc902cdb1d92fbb764f690818ffbee865e`; it does not copy that private
-engine's source into this public fork. Building requires access to that repo and Rust 1.95 or newer (pinned in this fork).
+The `arabic` feature adapts the Parley engine from the private
+`aliallaoua/gpui-arabic` repository at revision
+`ff9e23a5942e92ddcc5e1990ad64561f9285b2db` (branch
+`fast-shaping-performance`). Building requires access to that repository and
+Rust 1.95 or newer (pinned in this fork). Both Arabic dependencies use the same
+Git revision, so consumers do not need sibling source checkouts.
+
+The engine retains its history from `holool/gpui-arabic`. Its optimized revision
+is published separately in a private repository because GitHub disables formal
+forks of the original repository. No private engine source is included in this
+public Kit repository.
 
 ## Application APIs
 
@@ -60,6 +68,34 @@ English uncached medians differ by less than 1% across these text lengths.
 These are text microbenchmarks, not frame-rate results or a guarantee of zero
 overhead. The small-line cutoff avoids batching overhead on ordinary labels.
 Repeat on target hardware before application performance claims.
+
+## Further shaping optimization
+
+The engine reuses up to eight exact, previously verified font-instance
+requests, skips color-table scans for faces already known to have no color
+artwork, and uses binary search for grapheme boundaries. Fast disables the
+engine's final-result cache because Fast already owns those layouts. The
+shaped-paragraph cache remains enabled so wrapping reuses shaping; other engine
+callers retain their existing cache defaults.
+
+A second controlled comparison uses `1bb0f74` as its baseline and the same
+release fixture, fonts, 1,000 labels, seven fresh text systems, and three
+alternating process pairs per length:
+
+| Arabic label length | Before µs/line | After µs/line | Time reduction |
+| --- | ---: | ---: | ---: |
+| One order label | 45.91 | 37.63 | 18.0% |
+| Four copies | 158.68 | 134.37 | 15.3% |
+| Sixteen copies | 578.36 | 492.96 | 14.8% |
+
+The short-label Arabic-to-English ratio falls from 3.77× to 3.05×. English
+medians differ by −0.5% to +1.2%. All nine paired Arabic comparisons improve.
+These are uncached text-layout times; this iteration makes no new FPS claim.
+The native engine passes 62 release tests and strict Clippy checks. Fast's
+consumer harness continues to compare against the previous engine pin for all
+216 cases; the signed Components example passes shaping, wrapping, mixed
+selection and visual Input arrow checks. Arabic text and diacritics remain
+visible in the native example.
 
 ## Reproduce
 

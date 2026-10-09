@@ -105,20 +105,27 @@ gpui-kit = "0.7"
 
 `gpui-kit` 始终引入 GPUI 和 `gpui-base`；`gpui-component` 和默认图标集默认开启。只想保留部分层时关闭默认 feature 按需选择即可。`gpui-component` 的 feature（`inspector`、`decimal`、`tree-sitter` 及各 `tree-sitter-<language>`）在 `gpui-kit` 上同名可用。
 
-### GPUI Fast
+### GPUI Fast 与阿拉伯语支持
 
-启用可选的 `gpui-fast` feature，可以为核心、原生平台、WebAssembly 和所有已启用的
-Kit 层统一选择 [GPUI Fast](https://github.com/longbridge/gpui-fast)：
+本分支使用 GPUI Fast 0.1.6，并增加阿拉伯语塑形、双向文本光标移动、选区几何和换行支持。
+应用通过 `gpui_kit::component` 使用 GPUI Component 的 `Sidebar`、`Input` 和 `Button`。
+Base 是 GPUI Component 的内部依赖。
 
 ```toml
 [dependencies]
-gpui-kit = { version = "0.7", features = ["gpui-fast"] }
+gpui-kit = { git = "https://github.com/aliallaoua/gpui-kit", branch = "arabic-fast", features = ["gpui-fast"] }
+
+[patch.crates-io]
+gpui-fast = { git = "https://github.com/aliallaoua/gpui-kit", branch = "arabic-fast" }
 ```
 
-原有导入、初始化流程和测试宏保持不变，应用无需 `[patch]` 或 crate 别名。
-默认后端仍是固定版本的上游 GPUI 快照。Cargo features 是累加的，因此选择 Fast 后，
-上游包仍会参与编译。feature 组合和对比命令见
-[Getting Started](https://gpui-kit.com/zh-CN/docs/getting-started)。
+该补丁确保官方 Fast 平台 crate 与 Kit 使用同一个修改后的运行时。生产环境应将两项依赖固定到同一提交。
+阿拉伯语引擎固定到私有仓库 `aliallaoua/gpui-arabic` 的提交
+`ff9e23a5942e92ddcc5e1990ad64561f9285b2db`，构建需要该仓库的 Git 访问权限。
+[实现与验证](docs/ARABIC-FAST.md)说明了支持范围、测试命令和性能测量结果。
+
+默认后端仍是上游 GPUI。Fast 的保留式渲染和字形图集保持启用。阿拉伯语塑形结果会被缓存，
+普通文本仍使用原有的平台塑形路径。阿拉伯语忽略固定字符单元宽度，以保留连写和光标几何。
 
 ### 基础示例
 

@@ -403,6 +403,7 @@ impl ArabicTextSystem {
                 },
             )
             .with_automatic_optical_sizing()
+            .without_paragraph_result_cache()
             .with_fallback_families([
                 "Noto Sans Arabic",
                 "Arial",

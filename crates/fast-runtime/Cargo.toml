@@ -524,15 +524,15 @@ priority = 0
 
 [dependencies.arabic-core]
 package = "gpui-ce"
-git = "https://github.com/holool/gpui-arabic"
-rev = "18a98efc902cdb1d92fbb764f690818ffbee865e"
+git = "https://github.com/aliallaoua/gpui-arabic"
+rev = "ff9e23a5942e92ddcc5e1990ad64561f9285b2db"
 default-features = false
 optional = true
 
 [dependencies.arabic-parley]
 package = "gpui_ce_parley"
-git = "https://github.com/holool/gpui-arabic"
-rev = "18a98efc902cdb1d92fbb764f690818ffbee865e"
+git = "https://github.com/aliallaoua/gpui-arabic"
+rev = "ff9e23a5942e92ddcc5e1990ad64561f9285b2db"
 optional = true
 
 # Keep upstream runtime tests independent from Kit's optional shell workspace.

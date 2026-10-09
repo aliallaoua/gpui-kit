@@ -145,8 +145,8 @@ gpui-fast = { git = "https://github.com/aliallaoua/gpui-kit", branch = "arabic-f
 
 The patch ensures the official Fast platform crates and Kit share this fork's
 patched runtime. Pin both entries to the same commit for production. The
-Arabic engine remains the existing private `holool/gpui-arabic` dependency;
-Git access to it is required. [Implementation and validation](docs/ARABIC-FAST.md)
+Arabic engine is pinned to the private `aliallaoua/gpui-arabic` repository
+at `ff9e23a5942e92ddcc5e1990ad64561f9285b2db`; Git access to it is required. [Implementation and validation](docs/ARABIC-FAST.md)
 describes the scope, test commands, and performance measurements.
 
 The default backend remains upstream GPUI. Fast's retained rendering and glyph

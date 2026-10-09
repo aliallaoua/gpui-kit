@@ -106,10 +106,10 @@ dependencies = [
 name = "arabic-performance"
 version = "0.1.0"
 dependencies = [
- "gpui-ce",
+ "gpui-ce 0.2.2 (git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e)",
  "gpui-fast",
  "gpui-fast-macos",
- "gpui_ce_parley",
+ "gpui_ce_parley 0.1.0 (git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e)",
 ]
 
 [[package]]
@@ -1488,13 +1488,13 @@ dependencies = [
  "futures",
  "futures-concurrency",
  "getrandom 0.3.4",
- "gpui_ce_collections",
- "gpui_ce_macros",
- "gpui_ce_refineable",
- "gpui_ce_scheduler",
- "gpui_ce_shared_string",
- "gpui_ce_sum_tree",
- "gpui_ce_util",
+ "gpui_ce_collections 0.2.2 (git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e)",
+ "gpui_ce_macros 0.1.0 (git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e)",
+ "gpui_ce_refineable 0.2.2 (git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e)",
+ "gpui_ce_scheduler 0.2.2 (git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e)",
+ "gpui_ce_shared_string 0.1.0 (git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e)",
+ "gpui_ce_sum_tree 0.2.2 (git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e)",
+ "gpui_ce_util 0.2.6 (git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e)",
  "heapless",
  "http",
  "image",
@@ -1540,6 +1540,78 @@ dependencies = [
 ]
 
 [[package]]
+name = "gpui-ce"
+version = "0.2.2"
+source = "git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db#ff9e23a5942e92ddcc5e1990ad64561f9285b2db"
+dependencies = [
+ "accesskit",
+ "anyhow",
+ "async-channel",
+ "async-task",
+ "bindgen",
+ "bitflags 2.13.2",
+ "chrono",
+ "core-text",
+ "core-video",
+ "ctor",
+ "derive_more",
+ "derive_setters",
+ "etagere",
+ "foreign-types",
+ "futures",
+ "futures-concurrency",
+ "getrandom 0.3.4",
+ "gpui_ce_collections 0.2.2 (git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db)",
+ "gpui_ce_macros 0.1.0 (git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db)",
+ "gpui_ce_refineable 0.2.2 (git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db)",
+ "gpui_ce_scheduler 0.2.2 (git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db)",
+ "gpui_ce_shared_string 0.1.0 (git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db)",
+ "gpui_ce_sum_tree 0.2.2 (git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db)",
+ "gpui_ce_util 0.2.6 (git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db)",
+ "heapless",
+ "http",
+ "image",
+ "inventory",
+ "itertools 0.14.0",
+ "log",
+ "lyon",
+ "num_cpus",
+ "palette",
+ "parking",
+ "parking_lot",
+ "phf",
+ "pin-project",
+ "pollster 0.4.0",
+ "postage",
+ "profiling",
+ "rand 0.9.5",
+ "raw-window-handle",
+ "regex",
+ "resvg 0.48.1",
+ "schemars",
+ "seahash",
+ "serde",
+ "serde_json",
+ "skrifa",
+ "slotmap",
+ "smallvec",
+ "spin 0.10.1",
+ "strum 0.27.2",
+ "taffy 0.13.0",
+ "thiserror 2.0.21",
+ "tracing",
+ "unicode-bidi",
+ "unicode-segmentation",
+ "url",
+ "usvg 0.48.1",
+ "uuid",
+ "waker-fn",
+ "web-time",
+ "windows 0.61.3",
+ "windows 0.62.2",
+]
+
+[[package]]
 name = "gpui-fast"
 version = "0.1.6"
 dependencies = [
@@ -1557,7 +1629,7 @@ dependencies = [
  "etagere",
  "futures",
  "getrandom 0.3.4",
- "gpui-ce",
+ "gpui-ce 0.2.2 (git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db)",
  "gpui-fast-macros",
  "gpui-pre-collections",
  "gpui-pre-http-client",
@@ -1566,7 +1638,7 @@ dependencies = [
  "gpui-pre-shared-string",
  "gpui-pre-sum-tree",
  "gpui-pre-util",
- "gpui_ce_parley",
+ "gpui_ce_parley 0.1.0 (git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db)",
  "heapless",
  "image",
  "inventory",
@@ -1828,7 +1900,17 @@ name = "gpui_ce_collections"
 version = "0.2.2"
 source = "git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e#18a98efc902cdb1d92fbb764f690818ffbee865e"
 dependencies = [
- "gpui_ce_util",
+ "gpui_ce_util 0.2.6 (git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e)",
+ "indexmap",
+ "rustc-hash",
+]
+
+[[package]]
+name = "gpui_ce_collections"
+version = "0.2.2"
+source = "git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db#ff9e23a5942e92ddcc5e1990ad64561f9285b2db"
+dependencies = [
+ "gpui_ce_util 0.2.6 (git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db)",
  "indexmap",
  "rustc-hash",
 ]
@@ -1837,6 +1919,16 @@ dependencies = [
 name = "gpui_ce_derive_refineable"
 version = "0.2.2"
 source = "git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e#18a98efc902cdb1d92fbb764f690818ffbee865e"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
+name = "gpui_ce_derive_refineable"
+version = "0.2.2"
+source = "git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db#ff9e23a5942e92ddcc5e1990ad64561f9285b2db"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1855,13 +1947,39 @@ dependencies = [
 ]
 
 [[package]]
+name = "gpui_ce_macros"
+version = "0.1.0"
+source = "git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db#ff9e23a5942e92ddcc5e1990ad64561f9285b2db"
+dependencies = [
+ "heck 0.5.0",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
 name = "gpui_ce_parley"
 version = "0.1.0"
 source = "git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e#18a98efc902cdb1d92fbb764f690818ffbee865e"
 dependencies = [
  "anyhow",
  "fontique",
- "gpui-ce",
+ "gpui-ce 0.2.2 (git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e)",
+ "parking_lot",
+ "parley",
+ "skrifa",
+ "swash",
+ "unicode-segmentation",
+]
+
+[[package]]
+name = "gpui_ce_parley"
+version = "0.1.0"
+source = "git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db#ff9e23a5942e92ddcc5e1990ad64561f9285b2db"
+dependencies = [
+ "anyhow",
+ "fontique",
+ "gpui-ce 0.2.2 (git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db)",
  "parking_lot",
  "parley",
  "skrifa",
@@ -1874,13 +1992,36 @@ name = "gpui_ce_refineable"
 version = "0.2.2"
 source = "git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e#18a98efc902cdb1d92fbb764f690818ffbee865e"
 dependencies = [
- "gpui_ce_derive_refineable",
+ "gpui_ce_derive_refineable 0.2.2 (git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e)",
+]
+
+[[package]]
+name = "gpui_ce_refineable"
+version = "0.2.2"
+source = "git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db#ff9e23a5942e92ddcc5e1990ad64561f9285b2db"
+dependencies = [
+ "gpui_ce_derive_refineable 0.2.2 (git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db)",
 ]
 
 [[package]]
 name = "gpui_ce_scheduler"
 version = "0.2.2"
 source = "git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e#18a98efc902cdb1d92fbb764f690818ffbee865e"
+dependencies = [
+ "async-task",
+ "backtrace",
+ "chrono",
+ "flume 0.11.1",
+ "futures",
+ "parking_lot",
+ "rand 0.9.5",
+ "web-time",
+]
+
+[[package]]
+name = "gpui_ce_scheduler"
+version = "0.2.2"
+source = "git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db#ff9e23a5942e92ddcc5e1990ad64561f9285b2db"
 dependencies = [
  "async-task",
  "backtrace",
@@ -1903,6 +2044,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "gpui_ce_shared_string"
+version = "0.1.0"
+source = "git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db#ff9e23a5942e92ddcc5e1990ad64561f9285b2db"
+dependencies = [
+ "schemars",
+ "serde",
+ "smol_str",
+]
+
+[[package]]
 name = "gpui_ce_sum_tree"
 version = "0.2.2"
 source = "git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e#18a98efc902cdb1d92fbb764f690818ffbee865e"
@@ -1914,9 +2065,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "gpui_ce_sum_tree"
+version = "0.2.2"
+source = "git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db#ff9e23a5942e92ddcc5e1990ad64561f9285b2db"
+dependencies = [
+ "heapless",
+ "log",
+ "rayon",
+ "tracing",
+]
+
+[[package]]
 name = "gpui_ce_util"
 version = "0.2.6"
 source = "git+https://github.com/holool/gpui-arabic?rev=18a98efc902cdb1d92fbb764f690818ffbee865e#18a98efc902cdb1d92fbb764f690818ffbee865e"
+dependencies = [
+ "anyhow",
+ "log",
+ "which 6.0.3",
+]
+
+[[package]]
+name = "gpui_ce_util"
+version = "0.2.6"
+source = "git+https://github.com/aliallaoua/gpui-arabic?rev=ff9e23a5942e92ddcc5e1990ad64561f9285b2db#ff9e23a5942e92ddcc5e1990ad64561f9285b2db"
 dependencies = [
  "anyhow",
  "log",
