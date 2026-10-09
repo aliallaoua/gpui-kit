@@ -62,6 +62,7 @@ impl<E: SidebarItem> SidebarItem for SidebarGroup<E> {
             .when(!self.collapsed, |this| {
                 this.child(
                     h_flex()
+                        .when(super::is_rtl_locale(), |this| this.flex_row_reverse())
                         .flex_shrink_0()
                         .px_2()
                         .rounded(cx.theme().radius)

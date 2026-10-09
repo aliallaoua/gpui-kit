@@ -2,125 +2,146 @@ _version: 2
 Attachment:
   Remove:
     en: Remove
+    ar: "إزالة"
     zh-CN: 移除
     zh-HK: 移除
     zh-TW: 移除
   Retry:
     en: Retry
+    ar: "إعادة المحاولة"
     zh-CN: 重试
     zh-HK: 重試
     zh-TW: 重試
 Calendar:
   week.0:
     en: Su
+    ar: "أحد"
     zh-CN: 日
     zh-HK: 日
     zh-TW: 日
     it: Do
   week.1:
     en: Mo
+    ar: "إثنين"
     zh-CN: 一
     zh-HK: 一
     zh-TW: 一
     it: Lu
   week.2:
     en: Tu
+    ar: "ثلاثاء"
     zh-CN: 二
     zh-HK: 二
     zh-TW: 二
     it: Ma
   week.3:
     en: We
+    ar: "أربعاء"
     zh-CN: 三
     zh-HK: 三
     zh-TW: 三
     it: Me
   week.4:
     en: Th
+    ar: "خميس"
     zh-CN: 四
     zh-HK: 四
     zh-TW: 四
     it: Gi
   week.5:
     en: Fr
+    ar: "جمعة"
     zh-CN: 五
     zh-HK: 五
     zh-TW: 五
     it: Ve
   week.6:
     en: Sa
+    ar: "سبت"
     zh-CN: 六
     zh-HK: 六
     zh-TW: 六
     it: Sa
   month.January:
     en: January
+    ar: "يناير"
     zh-CN: 一月
     zh-HK: 一月
     zh-TW: 一月
     it: Gennaio
   month.February:
     en: February
+    ar: "فبراير"
     zh-CN: 二月
     zh-HK: 二月
     zh-TW: 二月
     it: Febbraio
   month.March:
     en: March
+    ar: "مارس"
     zh-CN: 三月
     zh-HK: 三月
     zh-TW: 三月
     it: Marzo
   month.April:
     en: April
+    ar: "أبريل"
     zh-CN: 四月
     zh-HK: 四月
     zh-TW: 四月
     it: Aprile
   month.May:
     en: May
+    ar: "مايو"
     zh-CN: 五月
     zh-HK: 五月
     zh-TW: 五月
     it: Maggio
   month.June:
     en: June
+    ar: "يونيو"
     zh-CN: 六月
     zh-HK: 六月
     zh-TW: 六月
     it: Giugno
   month.July:
     en: July
+    ar: "يوليو"
     zh-CN: 七月
     zh-HK: 七月
     zh-TW: 七月
     it: Luglio
   month.August:
     en: August
+    ar: "أغسطس"
     zh-CN: 八月
     zh-HK: 八月
     zh-TW: 八月
     it: Agosto
   month.September:
     en: September
+    ar: "سبتمبر"
     zh-CN: 九月
     zh-HK: 九月
     zh-TW: 九月
     it: Settembre
   month.October:
     en: October
+    ar: "أكتوبر"
     zh-CN: 十月
     zh-HK: 十月
     zh-TW: 十月
     it: Ottobre
   month.November:
     en: November
+    ar: "نوفمبر"
     zh-CN: 十一月
     zh-HK: 十一月
     zh-TW: 十一月
     it: Novembre
   month.December:
     en: December
+    ar: "ديسمبر"
     zh-CN: 十二月
     zh-HK: 十二月
     zh-TW: 十二月
@@ -128,17 +149,20 @@ Calendar:
 DatePicker:
   placeholder:
     en: "Select date"
+    ar: "اختر التاريخ"
     zh-CN: 选择日期
     zh-HK: 選擇日期
     zh-TW: 選取日期
     it: "Seleziona data"
   time:
     en: Time
+    ar: "الوقت"
     zh-CN: 时间
     zh-HK: 時間
 Select:
   placeholder:
     en: "Please select"
+    ar: "اختر"
     zh-CN: "请选择"
     zh-HK: "請選擇"
     zh-TW: "請選擇"
@@ -146,18 +170,21 @@ Select:
 ComboBox:
   placeholder:
     en: "Please select"
+    ar: "اختر"
     zh-CN: "请选择"
     zh-HK: "請選擇"
     zh-TW: "請選擇"
     it: Seleziona
   search_placeholder:
     en: "Search..."
+    ar: "بحث..."
     zh-CN: "搜索..."
     zh-HK: "搜索..."
     zh-TW: "搜尋..."
     it: "Cerca..."
   empty:
     en: "No results"
+    ar: "لا توجد نتائج"
     zh-CN: "暂无数据"
     zh-HK: "暫無數據"
     zh-TW: "沒有結果"
@@ -165,42 +192,49 @@ ComboBox:
 DropdownButton:
   more_options:
     en: More options
+    ar: "المزيد من الخيارات"
     zh-CN: 更多选项
     zh-HK: 更多選項
     zh-TW: 更多選項
 Dock:
   Unnamed:
     en: Unnamed
+    ar: "بلا اسم"
     zh-CN: 未命名
     zh-HK: 未命名
     zh-TW: 未命名
     it: "Senza nome"
   Close:
     en: Close
+    ar: "إغلاق"
     zh-CN: 关闭
     zh-HK: 關閉
     zh-TW: 關閉
     it: Chiudi
   Zoom In:
     en: Zoom In
+    ar: "تكبير"
     zh-CN: 放大
     zh-HK: 放大
     zh-TW: 放大
     it: Zoom In
   Zoom Out:
     en: Zoom Out
+    ar: "تصغير"
     zh-CN: 缩小
     zh-HK: 縮小
     zh-TW: 縮小
     it: Zoom Out
   Collapse:
     en: Collapse
+    ar: "طي"
     zh-CN: 隐藏
     zh-HK: 隱藏
     zh-TW: 收合
     it: Nascondi
   Expand:
     en: Expand
+    ar: "توسيع"
     zh-CN: 展开
     zh-HK: 展開
     zh-TW: 展開
@@ -208,36 +242,42 @@ Dock:
 ColorPicker:
   Palette:
     en: Palette
+    ar: "لوحة الألوان"
     zh-CN: 调色板
     zh-HK: 調色板
     zh-TW: 調色盤
     it: Tavolozza
   HSLA:
     en: HSLA
+    ar: "HSLA"
     zh-CN: HSLA
     zh-HK: HSLA
     zh-TW: HSLA
     it: HSLA
   Hue:
     en: Hue
+    ar: "درجة اللون"
     zh-CN: 色相
     zh-HK: 色相
     zh-TW: 色相
     it: Tonalità
   Saturation:
     en: Saturation
+    ar: "التشبع"
     zh-CN: 饱和度
     zh-HK: 飽和度
     zh-TW: 飽和度
     it: Saturazione
   Lightness:
     en: Lightness
+    ar: "الإضاءة"
     zh-CN: 亮度
     zh-HK: 亮度
     zh-TW: 亮度
     it: Luminosità
   Alpha:
     en: Alpha
+    ar: "الشفافية"
     zh-CN: 透明度
     zh-HK: 透明度
     zh-TW: 透明度
@@ -245,12 +285,14 @@ ColorPicker:
 Dialog:
   ok:
     en: OK
+    ar: "موافق"
     zh-CN: 确定
     zh-HK: 確定
     zh-TW: 確定
     it: OK
   cancel:
     en: Cancel
+    ar: "إلغاء"
     zh-CN: 取消
     zh-HK: 取消
     zh-TW: 取消
@@ -258,12 +300,14 @@ Dialog:
 Command:
   placeholder:
     en: Type a command or search...
+    ar: "اكتب أمرًا أو ابحث..."
     zh-CN: 输入命令或搜索...
     zh-HK: 輸入命令或搜尋...
     zh-TW: 輸入命令或搜尋...
     it: Digita un comando o cerca...
   empty:
     en: No results found.
+    ar: "لم يتم العثور على نتائج."
     zh-CN: 未找到结果。
     zh-HK: 未找到結果。
     zh-TW: 未找到結果。
@@ -271,6 +315,7 @@ Command:
 List:
   search_placeholder:
     en: Search...
+    ar: "بحث..."
     zh-CN: 搜索...
     zh-HK: 搜索...
     zh-TW: 搜尋...
@@ -278,63 +323,75 @@ List:
 Input:
   Decrement:
     en: Decrement
+    ar: "إنقاص"
     zh-CN: 减少
     zh-HK: 減少
     zh-TW: 減少
   Increment:
     en: Increment
+    ar: "زيادة"
     zh-CN: 增加
     zh-HK: 增加
     zh-TW: 增加
   Replace:
     en: Replace
+    ar: "استبدال"
     zh-CN: 替换
     zh-HK: 替換
     zh-TW: 取代
   Replace All:
     en: Replace All
+    ar: "استبدال الكل"
     zh-CN: 全部替换
     zh-HK: 全部替換
     zh-TW: 全部取代
   Cut:
     en: Cut
+    ar: "قص"
     zh-CN: 剪切
     zh-HK: 剪切
     zh-TW: 剪下
   Copy:
     en: Copy
+    ar: "نسخ"
     zh-CN: 复制
     zh-HK: 複製
     zh-TW: 複製
   Paste:
     en: Paste
+    ar: "لصق"
     zh-CN: 粘贴
     zh-HK: 貼上
     zh-TW: 貼上
   Select All:
     en: Select All
+    ar: "تحديد الكل"
     zh-CN: 全选
     zh-HK: 全選
     zh-TW: 全選
   Go to Definition:
     en: Go to Definition
+    ar: "الانتقال إلى التعريف"
     zh-CN: 跳转到定义
     zh-HK: 跳轉到定義
     zh-TW: 前往定義
   Show Code Actions:
     en: Show Code Actions
+    ar: "عرض إجراءات الشيفرة"
     zh-CN: 显示代码操作
     zh-HK: 顯示代碼操作
     zh-TW: 顯示程式碼動作
 Settings:
   search_placeholder:
     en: Search...
+    ar: "بحث..."
     zh-CN: 搜索...
     zh-HK: 搜索...
     zh-TW: 搜尋...
     it: Ricerca...
   Reset All:
     en: Reset All
+    ar: "إعادة ضبط الكل"
     zh-CN: 重置全部
     zh-HK: 重置全部
     zh-TW: 全部重設
@@ -342,266 +399,325 @@ Settings:
 Pagination:
   previous:
     en: Previous
+    ar: "السابق"
     zh-CN: 上一页
     zh-HK: 上一頁
     zh-TW: 上一頁
   next:
     en: Next
+    ar: "التالي"
     zh-CN: 下一页
     zh-HK: 下一頁
     zh-TW: 下一頁
 Carousel:
   label:
     en: Carousel
+    ar: "عارض الشرائح"
     zh-CN: 轮播
     zh-HK: 輪播
     zh-TW: 輪播
   previous:
     en: Previous slide
+    ar: "الشريحة السابقة"
     zh-CN: 上一张
     zh-HK: 上一張
     zh-TW: 上一張
   next:
     en: Next slide
+    ar: "الشريحة التالية"
     zh-CN: 下一张
     zh-HK: 下一張
     zh-TW: 下一張
   slide:
     en: Slide %{current} of %{total}
+    ar: "الشريحة %{current} من %{total}"
     zh-CN: 第 %{current} 张，共 %{total} 张
     zh-HK: 第 %{current} 張，共 %{total} 張
     zh-TW: 第 %{current} 張，共 %{total} 張
   pagination:
     en: Carousel pagination
+    ar: "التنقل بين الشرائح"
     zh-CN: 轮播分页
     zh-HK: 輪播分頁
     zh-TW: 輪播分頁
   go_to_slide:
     en: Go to slide %{current}
+    ar: "انتقل إلى الشريحة %{current}"
     zh-CN: 前往第 %{current} 张
     zh-HK: 前往第 %{current} 張
     zh-TW: 前往第 %{current} 張
 Table:
   SortBy:
     en: Sort by %{column}
+    ar: "ترتيب حسب %{column}"
     zh-CN: 按 %{column} 排序
     zh-HK: 按 %{column} 排序
     zh-TW: 依 %{column} 排序
 Chart:
   open:
     en: Open
+    ar: "الافتتاح"
     zh-CN: 开盘
     zh-HK: 開市
     zh-TW: 開盤
   high:
     en: High
+    ar: "الأعلى"
     zh-CN: 最高
     zh-HK: 最高
     zh-TW: 最高
   low:
     en: Low
+    ar: "الأدنى"
     zh-CN: 最低
     zh-HK: 最低
     zh-TW: 最低
   close:
     en: Close
+    ar: "الإغلاق"
     zh-CN: 收盘
     zh-HK: 收市
     zh-TW: 收盤
 Questionnaire:
   progress:
     en: Question %{current} of %{total}
+    ar: "السؤال %{current} من %{total}"
     zh-CN: 第 %{current} 题，共 %{total} 题
     zh-HK: 第 %{current} 題，共 %{total} 題
     zh-TW: 第 %{current} 題，共 %{total} 題
   previous:
     en: Previous
+    ar: "السابق"
     zh-CN: 上一题
     zh-HK: 上一題
     zh-TW: 上一題
   next:
     en: Next
+    ar: "التالي"
     zh-CN: 下一题
     zh-HK: 下一題
     zh-TW: 下一題
   skip:
     en: Skip
+    ar: "تخطي"
     zh-CN: 跳过
     zh-HK: 跳過
     zh-TW: 跳過
   submit:
     en: Submit
+    ar: "إرسال"
     zh-CN: 提交
     zh-HK: 提交
     zh-TW: 提交
   error.required:
     en: Choose an answer to continue.
+    ar: "اختر إجابة للمتابعة."
     zh-CN: 请选择一个答案后继续。
     zh-HK: 請選擇一個答案後繼續。
     zh-TW: 請選擇一個答案後繼續。
   error.optional:
     en: Choose an answer or skip this question.
+    ar: "اختر إجابة أو تخطَّ هذا السؤال."
     zh-CN: 请选择一个答案，或跳过此题。
     zh-HK: 請選擇一個答案，或跳過此題。
     zh-TW: 請選擇一個答案，或跳過此題。
 Speech:
   Start:
     en: Dictate
+    ar: "إملاء"
     zh-CN: 语音输入
     zh-HK: 語音輸入
     zh-TW: 語音輸入
   Stop:
     en: Stop dictation
+    ar: "إيقاف الإملاء"
     zh-CN: 停止语音输入
     zh-HK: 停止語音輸入
     zh-TW: 停止語音輸入
   Unavailable:
     en: Dictation unavailable
+    ar: "الإملاء غير متاح"
     zh-CN: 语音输入不可用
     zh-HK: 語音輸入不可用
     zh-TW: 語音輸入不可用
 Diff:
   BinaryChanges:
     en: Binary file changed
+    ar: "تم تغيير ملف ثنائي"
     zh-CN: 二进制文件已变更
     zh-HK: 二進位檔案已變更
   NoTextChanges:
     en: No text changes in this patch
+    ar: "لا توجد تغييرات نصية في هذا التصحيح"
     zh-CN: 此 patch 没有文本变更
     zh-HK: 此 patch 沒有文字變更
   NoChanges:
     en: No changes
+    ar: "لا توجد تغييرات"
     zh-CN: 没有变更
     zh-HK: 沒有變更
   EmptyFile:
     en: Empty file
+    ar: "ملف فارغ"
     zh-CN: 空文件
     zh-HK: 空檔案
   AddedFile:
     en: Added file
+    ar: "ملف مضاف"
     zh-CN: 新增文件
     zh-HK: 新增檔案
   DeletedFile:
     en: Deleted file
+    ar: "ملف محذوف"
     zh-CN: 已删除文件
     zh-HK: 已刪除檔案
   RenamedFile:
     en: Renamed
+    ar: "أُعيدت تسميته"
     zh-CN: 已重命名
     zh-HK: 已重新命名
   CopiedFile:
     en: Copied
+    ar: "تم نسخه"
     zh-CN: 已复制
     zh-HK: 已複製
   HiddenLines:
     en: "%{count} lines not in patch"
+    ar: "%{count} أسطر غير موجودة في التصحيح"
     zh-CN: "patch 中未包含 %{count} 行"
     zh-HK: "patch 中未包含 %{count} 行"
   ExpandAbove:
     en: Show %{count} lines above
+    ar: "عرض %{count} أسطر أعلاه"
     zh-CN: 显示上方 %{count} 行
     zh-HK: 顯示上方 %{count} 行
   ExpandBelow:
     en: Show %{count} lines below
+    ar: "عرض %{count} أسطر أدناه"
     zh-CN: 显示下方 %{count} 行
     zh-HK: 顯示下方 %{count} 行
   CollapseFile:
     en: Collapse %{name}
+    ar: "طي %{name}"
     zh-CN: 收起 %{name}
     zh-HK: 收起 %{name}
   ExpandFile:
     en: Expand %{name}
+    ar: "توسيع %{name}"
     zh-CN: 展开 %{name}
     zh-HK: 展開 %{name}
   AddAnnotation:
     en: Add annotation to line %{line}
+    ar: "إضافة تعليق إلى السطر %{line}"
     zh-CN: 为第 %{line} 行添加批注
     zh-HK: 為第 %{line} 行新增批註
   ConflictedFile:
     en: Conflicts
+    ar: "تعارضات"
     zh-CN: 有冲突
     zh-HK: 有衝突
   CurrentChange:
     en: Current change
+    ar: "التغيير الحالي"
     zh-CN: 当前更改
     zh-HK: 目前變更
   IncomingChange:
     en: Incoming change
+    ar: "التغيير الوارد"
     zh-CN: 传入的更改
     zh-HK: 傳入的變更
   BaseChange:
     en: Common ancestor
+    ar: "الأصل المشترك"
     zh-CN: 共同祖先
     zh-HK: 共同祖先
   AcceptCurrent:
     en: Accept Current
+    ar: "قبول الحالي"
     zh-CN: 采用当前更改
     zh-HK: 採用目前變更
   AcceptIncoming:
     en: Accept Incoming
+    ar: "قبول الوارد"
     zh-CN: 采用传入的更改
     zh-HK: 採用傳入的變更
   AcceptBoth:
     en: Accept Both
+    ar: "قبول كليهما"
     zh-CN: 保留双方更改
     zh-HK: 保留雙方變更
   AcceptedCurrent:
     en: Accepted current change
+    ar: "تم قبول التغيير الحالي"
     zh-CN: 已采用当前更改
     zh-HK: 已採用目前變更
   AcceptedIncoming:
     en: Accepted incoming change
+    ar: "تم قبول التغيير الوارد"
     zh-CN: 已采用传入的更改
     zh-HK: 已採用傳入的變更
   AcceptedBoth:
     en: Accepted both changes
+    ar: "تم قبول التغييرين"
     zh-CN: 已保留双方更改
     zh-HK: 已保留雙方變更
   UndoResolution:
     en: Undo
+    ar: "تراجع"
     zh-CN: 撤销
     zh-HK: 復原
   Original:
     en: Original
+    ar: "الأصلي"
     zh-CN: 原版
     zh-HK: 原版
   Modified:
     en: Modified
+    ar: "المعدل"
     zh-CN: 新版
     zh-HK: 新版
   ExpandLines:
     en: Expand %{count} unchanged lines
+    ar: "عرض %{count} أسطر لم تتغير"
     zh-CN: 展开 %{count} 行未变更内容
     zh-HK: 展開 %{count} 行未變更內容
   SourceLine:
     en: "%{side} line %{line}"
+    ar: "%{side} السطر %{line}"
     zh-CN: "%{side}第 %{line} 行"
     zh-HK: "%{side}第 %{line} 行"
   AddedLine:
     en: "%{side} line %{line}, added"
+    ar: "%{side} السطر %{line}، مضاف"
     zh-CN: "%{side}第 %{line} 行，新增"
     zh-HK: "%{side}第 %{line} 行，新增"
   RemovedLine:
     en: "%{side} line %{line}, removed"
+    ar: "%{side} السطر %{line}، محذوف"
     zh-CN: "%{side}第 %{line} 行，删除"
     zh-HK: "%{side}第 %{line} 行，刪除"
   UnchangedLines:
     en: "%{count} unchanged lines"
+    ar: "%{count} أسطر لم تتغير"
     zh-CN: "%{count} 行未变更内容"
     zh-HK: "%{count} 行未變更內容"
   SelectLine:
     en: Select %{side} line %{line}
+    ar: "تحديد %{side} السطر %{line}"
     zh-CN: 选择%{side}第 %{line} 行
     zh-HK: 選擇%{side}第 %{line} 行
   NoNewline:
     en: No newline at end of file
+    ar: "لا يوجد سطر جديد في نهاية الملف"
     zh-CN: 文件末尾没有换行
     zh-HK: 檔案末尾沒有換行
   Viewer:
     en: Diff for %{name}
+    ar: "الفروقات في %{name}"
     zh-CN: "%{name} 的差异"
     zh-HK: "%{name} 的差異"
   ViewerFiles:
     en: Diff for %{count} files
+    ar: "الفروقات في %{count} ملفات"
     zh-CN: "%{count} 个文件的差异"
     zh-HK: "%{count} 個檔案的差異"

@@ -1359,11 +1359,30 @@ impl<M: InputModeKind> InputBaseState<M> {
         cx.notify();
     }
 
+    #[cfg(feature = "gpui-fast")]
+    pub(super) fn select_left(&mut self, _: &SelectLeft, _: &mut Window, cx: &mut Context<Self>) {
+        self.undo_manager.break_transaction_coalescing();
+        self.select_all_cursors_to_with_affinity(
+            |s, sel| s.horizontal_target(sel, false, true),
+            false,
+            cx,
+        );
+    }
+    #[cfg(not(feature = "gpui-fast"))]
     pub(super) fn select_left(&mut self, _: &SelectLeft, _: &mut Window, cx: &mut Context<Self>) {
         self.undo_manager.break_transaction_coalescing();
         self.select_all_cursors_to(|s, sel| s.previous_boundary(sel.cursor_offset()), cx);
     }
 
+    #[cfg(feature = "gpui-fast")]
+    pub(super) fn select_right(&mut self, _: &SelectRight, _: &mut Window, cx: &mut Context<Self>) {
+        self.select_all_cursors_to_with_affinity(
+            |s, sel| s.horizontal_target(sel, true, true),
+            false,
+            cx,
+        );
+    }
+    #[cfg(not(feature = "gpui-fast"))]
     pub(super) fn select_right(&mut self, _: &SelectRight, _: &mut Window, cx: &mut Context<Self>) {
         self.select_all_cursors_to(|s, sel| s.next_boundary(sel.cursor_offset()), cx);
     }
@@ -1466,6 +1485,17 @@ impl<M: InputModeKind> InputBaseState<M> {
         );
     }
 
+    #[cfg(feature = "gpui-fast")]
+    pub(super) fn select_to_previous_word(
+        &mut self,
+        _: &SelectToPreviousWordStart,
+        _: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.undo_manager.break_transaction_coalescing();
+        self.select_all_cursors_to_with_affinity(|s, sel| s.word_target(sel, false), false, cx);
+    }
+    #[cfg(not(feature = "gpui-fast"))]
     pub(super) fn select_to_previous_word(
         &mut self,
         _: &SelectToPreviousWordStart,
@@ -1479,6 +1509,17 @@ impl<M: InputModeKind> InputBaseState<M> {
         );
     }
 
+    #[cfg(feature = "gpui-fast")]
+    pub(super) fn select_to_next_word(
+        &mut self,
+        _: &SelectToNextWordEnd,
+        _: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.undo_manager.break_transaction_coalescing();
+        self.select_all_cursors_to_with_affinity(|s, sel| s.word_target(sel, true), false, cx);
+    }
+    #[cfg(not(feature = "gpui-fast"))]
     pub(super) fn select_to_next_word(
         &mut self,
         _: &SelectToNextWordEnd,

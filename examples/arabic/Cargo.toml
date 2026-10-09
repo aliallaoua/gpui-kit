@@ -1,0 +1,17 @@
+[package]
+name = "gpui-kit-fast-arabic-example"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+# Standalone so the Arabic smoke check does not resolve optional shell runtimes.
+[workspace]
+
+[dependencies]
+gpui-kit = { path = "../../crates/kit", features = ["gpui-fast"] }
+
+[profile.dev]
+debug = 1
+
+[patch.crates-io]
+gpui-fast = { path = "../../crates/fast-runtime" }

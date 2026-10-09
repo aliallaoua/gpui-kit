@@ -25,7 +25,7 @@ name = "text_view_scroll"
 harness = false
 
 [features]
-gpui-fast = ["dep:gpui-fast"]
+gpui-fast = ["dep:gpui-fast", "gpui-fast/arabic"]
 decimal = ["dep:rust_decimal"]
 test-support = ["gpui/test-support", "gpui-fast?/test-support"]
 inspector = ["gpui_macros/inspector", "gpui/inspector", "gpui-fast?/inspector"]

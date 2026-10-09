@@ -7,17 +7,21 @@ One dependency for building desktop applications with GPUI:
 gpui-kit = "0.7"
 ```
 
-Enable the optional GPUI Fast backend without changing application imports:
+This fork adds Arabic shaping and editing to the GPUI Fast 0.1.6 backend.
+Use GPUI Component APIs through `gpui_kit::component` for application controls.
 
 ```toml
 [dependencies]
-gpui-kit = { version = "0.7", features = ["gpui-fast"] }
+gpui-kit = { git = "https://github.com/aliallaoua/gpui-kit", branch = "arabic-fast", features = ["gpui-fast"] }
+[patch.crates-io]
+gpui-fast = { git = "https://github.com/aliallaoua/gpui-kit", branch = "arabic-fast" }
 ```
 
-This selects GPUI Fast 0.1.x for the core, platforms, and every enabled Kit layer.
-`gpui_kit::*`, selective macro imports, and `#[gpui_kit::test]` keep working;
-no `[patch]` or `extern crate` alias is needed. Cargo features are additive, so
-upstream packages remain build dependencies while Kit exposes only Fast types.
+The patch keeps the platform crates and Kit on the same patched runtime.
+Pin both Git dependencies to the same revision for production. Building
+requires access to the existing private `holool/gpui-arabic` text engine.
+See the fork's [Arabic Fast notes](../../docs/ARABIC-FAST.md) for scope,
+performance measurements, and validation.
 
 `gpui-kit` depends on the matching set of GPUI crates, so an application
 never lists GPUI itself. `use gpui_kit::*;` is GPUI, and each layer is

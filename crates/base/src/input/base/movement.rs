@@ -290,6 +290,115 @@ impl<M: InputModeKind> InputBaseState<M> {
         );
     }
 
+    /// Resolve a horizontal move through the shaped backend, retaining bidi affinity.
+    #[cfg(feature = "gpui-fast")]
+    pub(super) fn horizontal_target(
+        &self,
+        sel: &CursorSelection,
+        right: bool,
+        extend: bool,
+    ) -> (usize, bool) {
+        let offset = sel.cursor_offset();
+        let upstream = self.line_end_affinity_for(sel);
+        let point = self.text.offset_to_point(offset);
+        let line_start = self.text.line_start_offset(point.row);
+        let layout = self.last_layout.as_ref();
+        let line = layout.and_then(|layout| layout.line(point.row));
+        if !extend && !sel.is_empty() {
+            if let (Some(layout), Some(line)) = (layout, line) {
+                if let (Some(start), Some(end)) = (
+                    line.position_for_index(sel.start.saturating_sub(line_start), layout, false),
+                    line.position_for_index(sel.end.saturating_sub(line_start), layout, true),
+                ) {
+                    let end_is_right = (end.y, end.x) > (start.y, start.x);
+                    return (
+                        if right == end_is_right {
+                            sel.end
+                        } else {
+                            sel.start
+                        },
+                        false,
+                    );
+                }
+            }
+            return (if right { sel.end } else { sel.start }, false);
+        }
+        if !self.masked && !self.tokens_visible() {
+            if let Some(line) = line {
+                if let Some((target, affinity)) =
+                    line.horizontal_target(point.column, upstream, right)
+                {
+                    return (line_start + target, affinity);
+                }
+            }
+        }
+        let forward = right ^ line.is_some_and(|line| line.is_rtl());
+        (
+            if forward {
+                self.next_boundary(offset)
+            } else {
+                self.previous_boundary(offset)
+            },
+            false,
+        )
+    }
+
+    #[cfg(feature = "gpui-fast")]
+    pub(super) fn word_target(&self, sel: &CursorSelection, right: bool) -> (usize, bool) {
+        let offset = sel.cursor_offset();
+        let point = self.text.offset_to_point(offset);
+        let line = self
+            .last_layout
+            .as_ref()
+            .and_then(|layout| layout.line(point.row));
+        if !self.masked && !self.tokens_visible() {
+            if let Some((target, affinity)) = line.and_then(|line| {
+                line.word_target(point.column, self.line_end_affinity_for(sel), right)
+            }) {
+                return (self.text.line_start_offset(point.row) + target, affinity);
+            }
+        }
+        let forward = right ^ line.is_some_and(|line| line.is_rtl());
+        (
+            if forward {
+                self.next_end_of_word_at(offset)
+            } else {
+                self.previous_start_of_word_at(offset)
+            },
+            false,
+        )
+    }
+
+    #[cfg(feature = "gpui-fast")]
+    fn move_horizontal(&mut self, right: bool, window: &mut Window, cx: &mut Context<Self>) {
+        let (offset, affinity) = self.horizontal_target(self.active_selection(), right, false);
+        if self.selections.is_single()
+            && self.active_selection().is_empty()
+            && offset == self.cursor()
+            && affinity == self.cursor_line_end_affinity
+        {
+            cx.propagate();
+            return;
+        }
+        self.move_all_cursors(
+            |state, selection| {
+                let (offset, affinity) = state.horizontal_target(selection, right, false);
+                (
+                    offset,
+                    state.preferred_column_for_with_affinity(offset, affinity),
+                    affinity,
+                )
+            },
+            None,
+            window,
+            cx,
+        );
+    }
+    #[cfg(feature = "gpui-fast")]
+    pub(super) fn left(&mut self, _: &MoveLeft, window: &mut Window, cx: &mut Context<Self>) {
+        self.move_horizontal(false, window, cx);
+    }
+    #[cfg(not(feature = "gpui-fast"))]
     pub(super) fn left(&mut self, _: &MoveLeft, window: &mut Window, cx: &mut Context<Self>) {
         // With a lone cursor at the very start there is nowhere to move.
         // Propagate the keystroke so an ancestor (e.g. a navigable command
@@ -315,7 +424,11 @@ impl<M: InputModeKind> InputBaseState<M> {
             cx,
         );
     }
-
+    #[cfg(feature = "gpui-fast")]
+    pub(super) fn right(&mut self, _: &MoveRight, window: &mut Window, cx: &mut Context<Self>) {
+        self.move_horizontal(true, window, cx);
+    }
+    #[cfg(not(feature = "gpui-fast"))]
     pub(super) fn right(&mut self, _: &MoveRight, window: &mut Window, cx: &mut Context<Self>) {
         // Mirror `left`: a lone cursor at the end of the text has nowhere to
         // move, so let the keystroke bubble to an ancestor.
@@ -427,6 +540,28 @@ impl<M: InputModeKind> InputBaseState<M> {
         self.move_to(self.text.len(), None, cx);
     }
 
+    #[cfg(feature = "gpui-fast")]
+    pub(super) fn move_to_previous_word(
+        &mut self,
+        _: &MoveToPreviousWord,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.move_all_cursors(
+            |s, sel| {
+                let (offset, affinity) = s.word_target(sel, false);
+                (
+                    offset,
+                    s.preferred_column_for_with_affinity(offset, affinity),
+                    affinity,
+                )
+            },
+            None,
+            window,
+            cx,
+        );
+    }
+    #[cfg(not(feature = "gpui-fast"))]
     pub(super) fn move_to_previous_word(
         &mut self,
         _: &MoveToPreviousWord,
@@ -444,6 +579,28 @@ impl<M: InputModeKind> InputBaseState<M> {
         );
     }
 
+    #[cfg(feature = "gpui-fast")]
+    pub(super) fn move_to_next_word(
+        &mut self,
+        _: &MoveToNextWord,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.move_all_cursors(
+            |s, sel| {
+                let (offset, affinity) = s.word_target(sel, true);
+                (
+                    offset,
+                    s.preferred_column_for_with_affinity(offset, affinity),
+                    affinity,
+                )
+            },
+            None,
+            window,
+            cx,
+        );
+    }
+    #[cfg(not(feature = "gpui-fast"))]
     pub(super) fn move_to_next_word(
         &mut self,
         _: &MoveToNextWord,

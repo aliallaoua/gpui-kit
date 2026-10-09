@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+if [ "$(uname -s)" != "Darwin" ]; then
+    printf '%s\n' 'This launcher requires macOS.' >&2
+    exit 1
+fi
+repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+cd "$repo_dir"
+manifest="$repo_dir/examples/arabic/Cargo.toml"
+cargo build --manifest-path "$manifest"
+target_dir=$(cargo metadata --manifest-path "$manifest" --format-version 1 --no-deps | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')
+bundle="/tmp/GPUIKitFastArabic.app"
+mkdir -p "$bundle/Contents/MacOS"
+cp "$target_dir/debug/gpui-kit-fast-arabic-example" "$bundle/Contents/MacOS/"
+cat > "$bundle/Contents/Info.plist" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>CFBundleIdentifier</key><string>com.aliallaoua.gpui-kit.fast-arabic</string>
+<key>CFBundleName</key><string>GPUI Kit Fast Arabic</string>
+<key>CFBundleExecutable</key><string>gpui-kit-fast-arabic-example</string>
+<key>CFBundlePackageType</key><string>APPL</string>
+<key>NSHighResolutionCapable</key><true/>
+</dict></plist>
+PLIST
+codesign --force --deep --sign - "$bundle"
+exec "$bundle/Contents/MacOS/gpui-kit-fast-arabic-example" "$@"

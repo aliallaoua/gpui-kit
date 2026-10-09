@@ -42,6 +42,7 @@ members = [
     "crates/shell/rquickjs-compat",
     "crates/component-shell",
 ]
+exclude = ["crates/fast-runtime", "examples/arabic", "examples/arabic-performance"]
 resolver = "2"
 
 [workspace.package]
@@ -73,9 +74,9 @@ gpui_web = { package = "gpui-pre-web", version = "=0.3.8" }
 # Fast is optional; existing crates select it through their gpui-fast feature.
 # Explicit package fields make Cargo use these dependency keys as Rust crate names;
 # the packages declare the same library names as the pre backend.
-gpui-fast = { package = "gpui-fast", version = "0.1.3", features = ["windows-manifest-provided-by-host"] }
-gpui-fast-platform = { package = "gpui-fast-platform", version = "0.1.3", features = ["font-kit", "x11", "wayland", "runtime_shaders"] }
-gpui-fast-web = { package = "gpui-fast-web", version = "0.1.3" }
+gpui-fast = { package = "gpui-fast", path = "crates/fast-runtime", version = "=0.1.6", features = ["windows-manifest-provided-by-host"] }
+gpui-fast-platform = { package = "gpui-fast-platform", version = "=0.1.6", features = ["font-kit", "x11", "wayland", "runtime_shaders"] }
+gpui-fast-web = { package = "gpui-fast-web", version = "=0.1.6" }
 gpui_macros = { package = "gpui-pre-macros", version = "=0.3.8" }
 reqwest_client = { package = "gpui-pre-reqwest-client", version = "=0.3.8" }
 sum-tree = { package = "gpui-pre-sum-tree", version = "=0.3.8" }
@@ -177,6 +178,7 @@ quickjs-jit-core = { opt-level = 3 }
 cap-std = { opt-level = 3 }
 
 [patch.crates-io]
+gpui-fast = { path = "crates/fast-runtime" }
 # LLRT's public modules still name their compatible binding dependency
 # `rquickjs`. Route those dependencies through a source-compatible facade so
 # the shell and LLRT share the exact same quickjs-jit types and VM.

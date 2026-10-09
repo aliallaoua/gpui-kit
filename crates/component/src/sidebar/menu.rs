@@ -261,6 +261,7 @@ impl SidebarItem for SidebarMenuItem {
         window: &mut Window,
         cx: &mut App,
     ) -> impl IntoElement {
+        let rtl = super::is_rtl_locale();
         let click_to_open = self.click_to_open;
         let click_to_toggle = self.click_to_toggle;
         let default_open = self.default_open;
@@ -289,6 +290,7 @@ impl SidebarItem for SidebarMenuItem {
             .w_full()
             .child(
                 h_flex()
+                    .when(rtl, |this| this.flex_row_reverse())
                     .size_full()
                     .id("item")
                     .role(Role::TreeItem)
@@ -323,12 +325,14 @@ impl SidebarItem for SidebarMenuItem {
                         this.h_7()
                             .child(
                                 h_flex()
+                                    .when(rtl, |this| this.flex_row_reverse())
                                     .flex_1()
                                     .gap_x_2()
                                     .justify_between()
                                     .overflow_x_hidden()
                                     .child(
                                         h_flex()
+                                            .when(rtl, |this| this.flex_row_reverse())
                                             .flex_1()
                                             .overflow_x_hidden()
                                             .refine_style(&self.label_style)
@@ -344,11 +348,22 @@ impl SidebarItem for SidebarMenuItem {
                                         .xsmall()
                                         .ghost()
                                         .icon(
-                                            Icon::new(IconName::ChevronRight)
-                                                .size_4()
-                                                .when(is_open, |this| {
-                                                    this.rotate(percentage(90. / 360.))
-                                                }),
+                                            Icon::new(if rtl {
+                                                IconName::ChevronLeft
+                                            } else {
+                                                IconName::ChevronRight
+                                            })
+                                            .size_4()
+                                            .when(
+                                                is_open,
+                                                |this| {
+                                                    this.rotate(percentage(if rtl {
+                                                        -90. / 360.
+                                                    } else {
+                                                        90. / 360.
+                                                    }))
+                                                },
+                                            ),
                                         )
                                         .on_click({
                                             move |_, _, cx| {
@@ -391,9 +406,14 @@ impl SidebarItem for SidebarMenuItem {
                     })
                     .map(|this| {
                         if let Some(tooltip) = collapsed_tooltip {
-                            this.managed_tooltip_at(Placement::Right, move |window, cx| {
-                                Tooltip::new(tooltip.clone()).build(window, cx)
-                            })
+                            this.managed_tooltip_at(
+                                if rtl {
+                                    Placement::Left
+                                } else {
+                                    Placement::Right
+                                },
+                                move |window, cx| Tooltip::new(tooltip.clone()).build(window, cx),
+                            )
                         } else {
                             this
                         }
@@ -413,11 +433,10 @@ impl SidebarItem for SidebarMenuItem {
                 this.child(
                     v_flex()
                         .id("submenu")
-                        .border_l_1()
+                        .when(rtl, |this| this.border_r_1().mr_3p5().pr_2p5())
+                        .when(!rtl, |this| this.border_l_1().ml_3p5().pl_2p5())
                         .border_color(cx.theme().sidebar_border)
                         .gap_1()
-                        .ml_3p5()
-                        .pl_2p5()
                         .py_0p5()
                         .children(self.children.into_iter().enumerate().map(|(ix, item)| {
                             let id = format!("{}-{}", id, ix);

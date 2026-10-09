@@ -24,6 +24,13 @@ pub use group::*;
 pub use header::*;
 pub use menu::*;
 
+fn is_rtl_locale() -> bool {
+    matches!(
+        crate::locale().split(['-', '_']).next(),
+        Some("ar" | "fa" | "he" | "ur")
+    )
+}
+
 const DEFAULT_WIDTH: Pixels = px(255.);
 const COLLAPSED_WIDTH: Pixels = px(48.);
 const SIDEBAR_TRANSITION_DURATION: Duration = Duration::from_millis(200);

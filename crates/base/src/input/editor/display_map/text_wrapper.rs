@@ -853,6 +853,47 @@ impl LineLayout {
     /// - When `line_end_affinity` is true, an offset at a soft wrap boundary is placed at
     ///   the end of the current visual line rather than the start of the next one.
     /// - The return value is relative to the top-left corner of this line layout, start from (0, 0)
+    #[cfg(feature = "gpui-fast")]
+    pub(crate) fn position_for_index(
+        &self,
+        offset: usize,
+        last_layout: &LastLayout,
+        line_end_affinity: bool,
+    ) -> Option<Point<Pixels>> {
+        let mut acc_len = 0;
+        let mut offset_y = px(0.);
+
+        for (i, line) in self.wrapped_lines.iter().enumerate() {
+            let is_last = i + 1 == self.wrapped_lines.len();
+
+            let matches = if line.len == 0 {
+                // Empty visual lines still own their boundary offset.
+                offset == acc_len
+            } else if is_last || line_end_affinity {
+                // Inclusive: cursor can sit at end of this visual line.
+                offset >= acc_len && offset <= acc_len + line.len
+            } else {
+                // Exclusive: boundary offset belongs to the next visual line.
+                offset >= acc_len && offset < acc_len + line.len
+            };
+
+            if matches {
+                let x = line
+                    .x_for_index_with_affinity(offset.saturating_sub(acc_len), line_end_affinity)
+                    + last_layout.alignment_offset(line.width)
+                    + self.line_indent(i);
+                return Some(point(x, offset_y));
+            }
+
+            // Always advance by actual line length. The last line gets +1 so the
+            // cursor can be placed after the final character.
+            acc_len += if is_last { line.len + 1 } else { line.len };
+            offset_y += last_layout.line_height;
+        }
+
+        None
+    }
+    #[cfg(not(feature = "gpui-fast"))]
     pub(crate) fn position_for_index(
         &self,
         offset: usize,
@@ -894,6 +935,54 @@ impl LineLayout {
         None
     }
 
+    #[cfg(feature = "gpui-fast")]
+    pub(crate) fn horizontal_target(
+        &self,
+        offset: usize,
+        upstream: bool,
+        right: bool,
+    ) -> Option<(usize, bool)> {
+        let mut start = 0;
+        for (row, line) in self.wrapped_lines.iter().enumerate() {
+            let end = start + line.len;
+            if offset >= start
+                && (offset < end
+                    || (offset == end && (upstream || row + 1 == self.wrapped_lines.len())))
+            {
+                let (index, affinity) =
+                    line.adjacent_visual_caret(offset - start, upstream, right)?;
+                return Some((start + index, affinity));
+            }
+            start = end;
+        }
+        None
+    }
+    #[cfg(feature = "gpui-fast")]
+    pub(crate) fn word_target(
+        &self,
+        offset: usize,
+        upstream: bool,
+        right: bool,
+    ) -> Option<(usize, bool)> {
+        let mut start = 0;
+        for (row, line) in self.wrapped_lines.iter().enumerate() {
+            let end = start + line.len;
+            if offset >= start
+                && (offset < end
+                    || (offset == end && (upstream || row + 1 == self.wrapped_lines.len())))
+            {
+                let (index, affinity) = line.word_caret(offset - start, upstream, right)?;
+                return Some((start + index, affinity));
+            }
+            start = end;
+        }
+        None
+    }
+    #[cfg(feature = "gpui-fast")]
+    pub(crate) fn is_rtl(&self) -> bool {
+        self.wrapped_lines.first().is_some_and(InputLine::is_rtl)
+    }
+
     /// Get the closest index for the given x in this line layout.
     ///
     /// This ignores y, so it only makes sense for a layout that is known to occupy a single
@@ -919,6 +1008,32 @@ impl LineLayout {
     ///
     /// Returns the sub-line index, the byte offset that sub-line starts at within this line
     /// layout, and `pos.x` translated into that sub-line's own coordinate space.
+    #[cfg(feature = "gpui-fast")]
+    fn wrapped_line_at(
+        &self,
+        pos: Point<Pixels>,
+        last_layout: &LastLayout,
+    ) -> Option<(usize, usize, Pixels)> {
+        let mut offset = 0;
+        let mut line_top = px(0.);
+
+        for (i, line) in self.wrapped_lines.iter().enumerate() {
+            let line_bottom = line_top + last_layout.line_height;
+            if pos.y >= line_top && pos.y < line_bottom {
+                return Some((
+                    i,
+                    offset,
+                    pos.x - last_layout.alignment_offset(line.width) - self.line_indent(i),
+                ));
+            }
+
+            offset += line.len;
+            line_top = line_bottom;
+        }
+
+        None
+    }
+    #[cfg(not(feature = "gpui-fast"))]
     fn wrapped_line_at(
         &self,
         pos: Point<Pixels>,
@@ -951,6 +1066,20 @@ impl LineLayout {
     /// the next, so the affinity is what tells [`Self::position_for_index`] which of the two the
     /// caret belongs to. Without it a click past the last glyph of a wrapped line would put a
     /// visible caret on the following line.
+    #[cfg(feature = "gpui-fast")]
+    pub(crate) fn closest_index_for_position(
+        &self,
+        pos: Point<Pixels>,
+        last_layout: &LastLayout,
+    ) -> Option<(usize, bool)> {
+        let (i, offset, x) = self.wrapped_line_at(pos, last_layout)?;
+        let line = &self.wrapped_lines[i];
+        let (ix, upstream) = line.closest_caret_for_x(x);
+        let line_end_affinity = upstream || (i + 1 < self.wrapped_lines.len() && ix == line.len);
+
+        Some((offset + ix, line_end_affinity))
+    }
+    #[cfg(not(feature = "gpui-fast"))]
     pub(crate) fn closest_index_for_position(
         &self,
         pos: Point<Pixels>,

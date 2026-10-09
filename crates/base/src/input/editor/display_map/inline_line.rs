@@ -14,6 +14,8 @@ pub(crate) struct InputLine {
     pub(crate) width: Pixels,
     pub(crate) text: SharedString,
     content: Content,
+    #[cfg(feature = "gpui-fast")]
+    geometry: Option<std::sync::Arc<gpui::arabic::ArabicLayout>>,
 }
 // Keep the ordinary shaped row inline: boxing it would add an allocation to
 // every existing plain-text row. Only token rows allocate fragment storage.
@@ -28,6 +30,8 @@ impl From<ShapedLine> for InputLine {
             len: line.len,
             width: line.width,
             text: line.text.clone(),
+            #[cfg(feature = "gpui-fast")]
+            geometry: gpui::arabic::layout_for(&line),
             content: Content::Text(line),
         }
     }
@@ -40,7 +44,120 @@ impl InputLine {
             text,
             width,
             content: Content::Inline(fragments),
+            #[cfg(feature = "gpui-fast")]
+            geometry: None,
         }
+    }
+    #[cfg(feature = "gpui-fast")]
+    pub(crate) fn x_for_index_with_affinity(&self, ix: usize, upstream: bool) -> Pixels {
+        #[cfg(feature = "gpui-fast")]
+        if let Some(geometry) = &self.geometry {
+            return geometry
+                .caret_bounds(Self::caret(ix, upstream), px(1.))
+                .map_or(px(0.), |bounds| bounds.origin.x);
+        }
+        let _ = upstream;
+        self.x_for_index(ix)
+    }
+    #[cfg(feature = "gpui-fast")]
+    fn caret(index: usize, upstream: bool) -> gpui::arabic::CaretPosition {
+        gpui::arabic::CaretPosition {
+            index,
+            affinity: if upstream {
+                gpui::arabic::CaretAffinity::Upstream
+            } else {
+                gpui::arabic::CaretAffinity::Downstream
+            },
+        }
+    }
+    #[cfg(feature = "gpui-fast")]
+    pub(crate) fn closest_caret_for_x(&self, x: Pixels) -> (usize, bool) {
+        #[cfg(feature = "gpui-fast")]
+        if let Some(geometry) = &self.geometry {
+            let caret = geometry
+                .caret_for_point(point(x, px(0.5)), px(1.))
+                .unwrap_or_else(|caret| caret);
+            return (
+                caret.index,
+                caret.affinity == gpui::arabic::CaretAffinity::Upstream,
+            );
+        }
+        (self.closest_index_for_x(x), false)
+    }
+    #[cfg(feature = "gpui-fast")]
+    pub(crate) fn adjacent_visual_caret(
+        &self,
+        index: usize,
+        upstream: bool,
+        right: bool,
+    ) -> Option<(usize, bool)> {
+        #[cfg(feature = "gpui-fast")]
+        if let Some(geometry) = &self.geometry {
+            let next = geometry.adjacent_visual_caret(
+                Self::caret(index, upstream),
+                if right {
+                    gpui::arabic::VisualDirection::Right
+                } else {
+                    gpui::arabic::VisualDirection::Left
+                },
+            )?;
+            return Some((
+                next.index,
+                next.affinity == gpui::arabic::CaretAffinity::Upstream,
+            ));
+        }
+        let _ = (index, upstream, right);
+        None
+    }
+    #[cfg(feature = "gpui-fast")]
+    pub(crate) fn word_caret(
+        &self,
+        index: usize,
+        upstream: bool,
+        right: bool,
+    ) -> Option<(usize, bool)> {
+        #[cfg(feature = "gpui-fast")]
+        if let Some(geometry) = &self.geometry {
+            let caret = Self::caret(index, upstream);
+            let next = geometry.word_caret(caret, right);
+            if next == caret {
+                return None;
+            }
+            return Some((
+                next.index,
+                next.affinity == gpui::arabic::CaretAffinity::Upstream,
+            ));
+        }
+        let _ = (index, upstream, right);
+        None
+    }
+    #[cfg(feature = "gpui-fast")]
+    pub(crate) fn is_rtl(&self) -> bool {
+        #[cfg(feature = "gpui-fast")]
+        if let Some(geometry) = &self.geometry {
+            return geometry.is_rtl();
+        }
+        false
+    }
+    #[cfg(feature = "gpui-fast")]
+    pub(crate) fn selection_bounds(
+        &self,
+        range: Range<usize>,
+        height: Pixels,
+    ) -> smallvec::SmallVec<[gpui::Bounds<Pixels>; 4]> {
+        #[cfg(feature = "gpui-fast")]
+        if let Some(geometry) = &self.geometry {
+            return geometry
+                .selection_bounds(range, height)
+                .into_iter()
+                .collect();
+        }
+        let left = self.x_for_index(range.start);
+        let right = self.x_for_index(range.end);
+        smallvec::smallvec![gpui::Bounds::new(
+            point(left, px(0.)),
+            gpui::size(right - left, height),
+        )]
     }
     pub(crate) fn x_for_index(&self, ix: usize) -> Pixels {
         match &self.content {

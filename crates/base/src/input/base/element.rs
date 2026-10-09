@@ -726,6 +726,26 @@ impl<M: InputModeKind> TextElement<M> {
     }
 
     /// Layout the match range to a Path.
+    #[cfg(feature = "gpui-fast")]
+    pub(crate) fn layout_match_range(
+        range: Range<usize>,
+        last_layout: &LastLayout,
+        bounds: &Bounds<Pixels>,
+    ) -> Option<Path<Pixels>> {
+        let corners = Self::layout_range_corners(&range, last_layout)?;
+        let origin = bounds.origin + point(last_layout.line_number_width, px(0.));
+        let mut builder = gpui::PathBuilder::fill();
+        // Bidi selections can occupy several disjoint rectangles on one row.
+        for rect in corners {
+            builder.move_to(origin + rect.top_left);
+            builder.line_to(origin + rect.top_right);
+            builder.line_to(origin + rect.bottom_right);
+            builder.line_to(origin + rect.bottom_left);
+            builder.close();
+        }
+        builder.build().ok()
+    }
+    #[cfg(not(feature = "gpui-fast"))]
     pub(crate) fn layout_match_range(
         range: Range<usize>,
         last_layout: &LastLayout,
@@ -746,6 +766,74 @@ impl<M: InputModeKind> TextElement<M> {
     /// Project a buffer range through the visible (non-folded) shaped lines.
     /// Half-open intersections give soft-wrap ends their trailing affinity and
     /// prevent ranges on later lines from painting an earlier line's first glyph.
+    #[cfg(feature = "gpui-fast")]
+    fn layout_range_corners(
+        range: &Range<usize>,
+        last_layout: &LastLayout,
+    ) -> Option<Vec<Corners<Point<Pixels>>>> {
+        let range = range.start.max(last_layout.visible_range_offset.start)
+            ..range.end.min(last_layout.visible_range_offset.end);
+        if range.is_empty() {
+            return None;
+        }
+
+        let mut y = last_layout.visible_top;
+        let mut corners = Vec::new();
+        for (&line_offset, line) in last_layout
+            .visible_line_byte_offsets
+            .iter()
+            .zip(last_layout.lines.iter())
+        {
+            let mut offset = line_offset;
+            for (row, shaped) in line.wrapped_lines.iter().enumerate() {
+                let end = offset + shaped.len;
+                let start_ix = range.start.max(offset);
+                let end_ix = range.end.min(end);
+                let is_last = row + 1 == line.wrapped_lines.len();
+                // A selected newline has a one-space cell, including empty lines.
+                // A wrap boundary is not a newline and must not get such a cell.
+                let newline = is_last && range.start <= end && range.end > end;
+                let indent = if row == 0 { px(0.) } else { line.wrap_indent };
+                let alignment = last_layout.alignment_offset(shaped.width);
+                let origin = point(alignment + indent, y);
+                if start_ix < end_ix {
+                    for rect in shaped.selection_bounds(
+                        start_ix - offset..end_ix - offset,
+                        last_layout.line_height,
+                    ) {
+                        let top_left = origin + rect.origin;
+                        let bottom_right = top_left + point(rect.size.width, rect.size.height);
+                        corners.push(Corners {
+                            top_left,
+                            top_right: point(bottom_right.x, top_left.y),
+                            bottom_left: point(top_left.x, bottom_right.y),
+                            bottom_right,
+                        });
+                    }
+                }
+                if newline {
+                    let x = if shaped.is_rtl() {
+                        -last_layout.space_width
+                    } else {
+                        shaped.width
+                    };
+                    let top_left = origin + point(x, px(0.));
+                    let bottom_right =
+                        top_left + point(last_layout.space_width, last_layout.line_height);
+                    corners.push(Corners {
+                        top_left,
+                        top_right: point(bottom_right.x, top_left.y),
+                        bottom_left: point(top_left.x, bottom_right.y),
+                        bottom_right,
+                    });
+                }
+                offset = end;
+                y += last_layout.line_height;
+            }
+        }
+        (!corners.is_empty()).then_some(corners)
+    }
+    #[cfg(not(feature = "gpui-fast"))]
     fn layout_range_corners(
         range: &Range<usize>,
         last_layout: &LastLayout,

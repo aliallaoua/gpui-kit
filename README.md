@@ -128,21 +128,31 @@ features off to keep only the layers you use. The `gpui-component` features (`in
 `tree-sitter`, and each `tree-sitter-<language>`) are available under the same
 names.
 
-### GPUI Fast
+### GPUI Fast with Arabic
 
-Enable the optional `gpui-fast` feature to select [GPUI Fast](https://github.com/longbridge/gpui-fast)
-for the core, native platforms, WebAssembly, and every enabled Kit layer:
+This fork selects GPUI Fast 0.1.6 and adds Arabic shaping, bidi caret movement,
+selection geometry and wrapping. Application controls use GPUI Component's
+`Sidebar`, `Input`, and `Button` APIs through `gpui_kit::component`. Base is an
+internal dependency of GPUI Component.
 
 ```toml
 [dependencies]
-gpui-kit = { version = "0.7", features = ["gpui-fast"] }
+gpui-kit = { git = "https://github.com/aliallaoua/gpui-kit", branch = "arabic-fast", features = ["gpui-fast"] }
+
+[patch.crates-io]
+gpui-fast = { git = "https://github.com/aliallaoua/gpui-kit", branch = "arabic-fast" }
 ```
 
-Keep the same imports, initialization, and test macros; no application `[patch]`
-or crate alias is needed. The default backend remains the pinned upstream GPUI
-snapshot. Cargo features are additive, so upstream packages still compile when
-Fast is selected. See [Getting Started](https://gpui-kit.com/docs/getting-started)
-for feature combinations and comparison commands.
+The patch ensures the official Fast platform crates and Kit share this fork's
+patched runtime. Pin both entries to the same commit for production. The
+Arabic engine remains the existing private `holool/gpui-arabic` dependency;
+Git access to it is required. [Implementation and validation](docs/ARABIC-FAST.md)
+describes the scope, test commands, and performance measurements.
+
+The default backend remains upstream GPUI. Fast's retained rendering and glyph
+atlas stay in use. Arabic shapes are cached; ordinary text uses the original
+platform shaping path. Fixed character cell widths are ignored for Arabic to
+preserve cursive joins and caret geometry.
 
 ### Basic Example
 

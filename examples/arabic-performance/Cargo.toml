@@ -1,0 +1,18 @@
+[package]
+name = "arabic-performance"
+version = "0.1.0"
+edition = "2024"
+publish = false
+[workspace]
+[features]
+arabic = ["gpui/arabic"]
+[dependencies]
+gpui = { package = "gpui-fast", path = "../../crates/fast-runtime" }
+gpui_macos = { package = "gpui-fast-macos", version = "=0.1.6", features = ["font-kit", "runtime_shaders"] }
+[patch.crates-io]
+gpui-fast = { path = "../../crates/fast-runtime" }
+[profile.dev]
+opt-level = 3
+debug = 0
+[profile.release]
+strip = "none"
